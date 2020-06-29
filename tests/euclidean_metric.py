@@ -1,26 +1,27 @@
-from nearset import NearSet
+from nearset import Nearset
+from nearset.metrics import euclidean_distance, cosine_distance
 from sklearn.datasets import make_blobs
 from tqdm import tqdm
+import time
 import numpy as np
 
-
-def rdist(x, y):
-    return np.sum((x - y)**2)
-
-
-def query_dist(x):
-    def func(y):
-        return rdist(x, y)
-    return func
-
-
+# create dataset
 N = 100000
-X, y = make_blobs(N, n_features=100, centers=50)
-ns = NearSet(query_dist(X[0]), max_size=10)
+X, y = make_blobs(N, n_features=10, centers=50)
 
+# the vector queried: ie. find the nearest neighbors of this point
+query = X[0]
+
+# order data by comparing its distance to the query
+ns = Nearset(euclidean_distance(query), max_size=100)
+
+# add all points to the set by using standard __setitem__ method
 for i in tqdm(range(X.shape[0])):
-    ns[i] = X[i]
+    ns["node_" + str(i)] = X[i]
 
-print(ns.nodes[0].order)
-print(ns.nodes[1].order)
-print(ns.nodes[2].order)
+# verify that points in the set are ordered by distance
+last_distance = -1
+for idx, value, distance in ns:
+    assert distance >= last_distance
+    last_distance = distance
+    print(idx, distance)

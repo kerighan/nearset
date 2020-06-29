@@ -16,7 +16,7 @@ cdef class Node(object):
         return f"<{self.key}>{self.value}"
 
 
-cdef class NearSet(object):
+cdef class Nearset(object):
     cpdef public object cmp
     cpdef public set keys
     cpdef public Node start_value
@@ -24,7 +24,7 @@ cdef class NearSet(object):
     cpdef public object index_node_order
     cpdef public int max_size
 
-    def __init__(self, cmp, max_size=None):
+    def __init__(self, cmp, max_size=-1):
         self.cmp = cmp
         self.keys = set()
         self.nodes = blist()
@@ -52,7 +52,7 @@ cdef class NearSet(object):
         node = Node(key, value)
         node.order = self.cmp(node.value)
 
-        if self.max_size is not None \
+        if self.max_size > 0 \
                 and len(self.keys) >= self.max_size \
                 and node.order > self.nodes[self.max_size - 1].order:
             return
@@ -73,7 +73,7 @@ cdef class NearSet(object):
         self.nodes.insert(idx, node)
         self.index_node_order.insert(idx, node.order)
         self.keys.add(node.key)
-        if self.max_size is not None:
+        if self.max_size > 0:
             self.index_node_order = self.index_node_order[:self.max_size]
             self.nodes = self.nodes[:self.max_size]
 
@@ -85,6 +85,10 @@ cdef class NearSet(object):
 
     cpdef items(self):
         return [(item.key, item.value) for item in self.nodes]
+    
+    def __iter__(self):
+        for node in self.nodes:
+            yield node.key, node.value, node.order
 
     def __repr__(self):
         return str([item.value for item in self.nodes])

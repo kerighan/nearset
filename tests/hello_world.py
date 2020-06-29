@@ -1,9 +1,10 @@
-from nearset import NearSet
+from nearset import Nearset
 
 
-ns = NearSet(lambda x: len(x))
-ns["salut"] = "salut"
-ns["comment"] = "comment"
-ns["ça"] = "çaut"
+ns = Nearset(lambda x: len(x))
+ns["hi"] = "hi"
+ns["how"] = "how"
+ns["are"] = "are"
+ns["you"] = "you ?"
 
-print(ns.nodes[:2])
+print(ns)
