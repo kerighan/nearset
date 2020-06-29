@@ -1,5 +1,5 @@
-import setuptools
 import numpy
+import setuptools
 from Cython.Build import cythonize
 from setuptools import Extension
 
